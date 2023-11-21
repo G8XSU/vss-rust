@@ -1,19 +1,20 @@
 use std::sync::Arc;
 
 use ::prost::Message;
-use axum::{debug_handler, RequestExt};
 use axum::body::Body;
 use axum::body::Bytes;
+use axum::debug_handler;
 use axum::extract::State;
 use axum::http::{Response, StatusCode};
 use axum::response::IntoResponse;
 
-use crate::store::DynamoDbBackend;
+use crate::dynamodb_store::DynamoDbStore;
+use crate::store::KvStore;
 use crate::types::{DeleteObjectRequest, GetObjectRequest, ListKeyVersionsRequest, PutObjectRequest};
 
 #[debug_handler]
 pub async fn get_object(
-	State(kvstore): State<Arc<DynamoDbBackend>>,
+	State(kvstore): State<Arc<DynamoDbStore>>,
 	body: Bytes,
 ) -> impl IntoResponse {
 	let request = match GetObjectRequest::decode(body.as_ref()) {
@@ -35,7 +36,7 @@ pub async fn get_object(
 }
 
 pub async fn put_object(
-	State(kvstore): State<Arc<DynamoDbBackend>>,
+	State(kvstore): State<Arc<DynamoDbStore>>,
 	body: Bytes,
 ) -> impl IntoResponse {
 	let request = match PutObjectRequest::decode(body.as_ref()) {
@@ -57,7 +58,7 @@ pub async fn put_object(
 }
 
 pub async fn delete_object(
-	State(kvstore): State<Arc<DynamoDbBackend>>,
+	State(kvstore): State<Arc<DynamoDbStore>>,
 	body: Bytes,
 ) -> impl IntoResponse {
 	let request = match DeleteObjectRequest::decode(body.as_ref()) {
@@ -79,7 +80,7 @@ pub async fn delete_object(
 }
 
 pub async fn list_key_versions(
-	State(kvstore): State<Arc<DynamoDbBackend>>,
+	State(kvstore): State<Arc<DynamoDbStore>>,
 	body: Bytes,
 ) -> impl IntoResponse {
 	let request = match ListKeyVersionsRequest::decode(body.as_ref()) {

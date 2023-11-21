@@ -2,16 +2,16 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 
 use aws_sdk_dynamodb::Client;
-use axum::handler::HandlerWithoutStateExt;
 use axum::Router;
 use axum::routing::post;
 
 use crate::api::{delete_object, get_object, list_key_versions, put_object};
-use crate::store::DynamoDbBackend;
+use crate::dynamodb_store::DynamoDbStore;
 
 pub(crate) mod api;
 pub(crate) mod types;
 pub(crate) mod store;
+pub(crate) mod dynamodb_store;
 
 #[tokio::main]
 async fn main() {
@@ -19,7 +19,7 @@ async fn main() {
 	let client = Client::new(&shared_config);
 
 	// Wrap DynamoDbBackend in Arc (Atomic Reference Counter) for sharing across threads
-	let store = Arc::new(DynamoDbBackend::new(client));
+	let store = Arc::new(DynamoDbStore::new(client));
 
 	let app = Router::new()
 		.route("/getObject", post(get_object))
