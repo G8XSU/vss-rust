@@ -4,8 +4,7 @@ extern crate prost_build;
 use std::{env, fs, fs::File, path::Path};
 
 /// To generate updated proto objects:
-/// 1. Place `vss.proto` file in `src/proto/`
-/// 2. run `cargo build --features=genproto`
+/// 1. run `cargo build --features=genproto`
 fn main() {
 	#[cfg(feature = "genproto")]
 	generate_protos();
